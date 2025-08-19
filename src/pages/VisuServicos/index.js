@@ -1,7 +1,9 @@
-import { View } from 'react-native';
+import { View, SafeAreaView } from 'react-native';
 
 export default function VisuServicos() {
- return (
-   <View/>
+  return (
+    <SafeAreaView style={styles.container}>
+      {/* ... todo o conteúdo da sua tela ... */}
+    </SafeAreaView>
   );
 }

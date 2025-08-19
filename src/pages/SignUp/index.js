@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
 
 import * as Animatable from 'react-native-animatable';
 
@@ -17,19 +17,36 @@ export default function SignUp() {
     const [confirmPassword, setConfirmPassword] = useState("");
 
     const handleRegister = async () => {
+        // 1. Teste o Alert. Se este alerta não aparecer, o problema é com a importação ou setup do Alert
+        //Alert.alert("Teste de Alerta", "Este alerta deve aparecer na tela.");
+
+        console.log("Botão 'Cadastrar' pressionado!");
+
         if (password !== confirmPassword) {
-            alert("Senhas não conferem!");
+            Alert.alert("Erro", "As senhas não conferem!");
             return;
         }
+
+        if (!name || !email || !password) {
+            Alert.alert("Atenção", "Por favor, preencha todos os campos.");
+            return;
+        }
+
         try {
-            await registerUser(email, password); // chama Firebase ou Controller
-            alert("Cadastro realizado com sucesso!");
-            navigation.replace("Usuario"); // vai direto para a tela de usuários
+            console.log("Tentando registrar usuário...");
+            await registerUser(email, password, name);
+
+            console.log("Usuário registrado com sucesso! Navegando...");
+            Alert.alert("Sucesso!", "Cadastro realizado com sucesso.");
+            navigation.replace("MainTabs");
         } catch (err) {
-            alert(err.message);
+            console.log("Ocorreu um erro durante o registro.");
+            // Loga o objeto de erro completo
+            console.log(err);
+            Alert.alert("Erro de Cadastro", err.message);
         }
     };
-    
+
     return (
         <View style={styles.container}>
             <Animatable.View animation='fadeInLeft' delay={500} style={styles.containerHeader}>
