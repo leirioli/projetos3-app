@@ -19,7 +19,8 @@ export default function SignIn() {
   const handleLogin = async () => {
     try {
       await loginUser(email, password); // chama Firebase
-      navigation.replace("Usuario"); // para a tela de usuario
+      // Após o login, navegue para a tela 'Usuario' dentro do 'MainTabs'
+      navigation.replace('MainTabs', { screen: 'Usuario' });
     } catch (err) {
       setError(err.message);
     }
