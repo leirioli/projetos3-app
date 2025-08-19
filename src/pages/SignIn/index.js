@@ -1,14 +1,29 @@
-import React from 'react';
+import React, { useState } from 'react'
+
 import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 
 import * as Animatable from 'react-native-animatable';
 
 import { useNavigation } from '@react-navigation/native';
 
+import { loginUser } from "../../controllers/AuthController";
+
 
 export default function SignIn() {
 
   const navigation = useNavigation();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const handleLogin = async () => {
+    try {
+      await loginUser(email, password); // chama Firebase
+      navigation.replace("Usuario"); // para a tela de usuario
+    } catch (err) {
+      setError(err.message);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -21,15 +36,19 @@ export default function SignIn() {
         <TextInput
           placeholder='Digite seu e-mail...'
           style={styles.input}
+          value={email} onChangeText={setEmail}
         />
 
         <Text style={styles.title}>Senha</Text>
         <TextInput
           placeholder='Digite sua senha...'
           style={styles.input}
+          secureTextEntry value={password} onChangeText={setPassword}
         />
 
-        <TouchableOpacity style={styles.button}>
+        {error ? <Text style={{ color: "red", marginBottom: 10 }}>{error}</Text> : null}
+
+        <TouchableOpacity style={styles.button} onPress={handleLogin}>
           <Text style={styles.buttonText}>Entrar</Text>
         </TouchableOpacity>
 

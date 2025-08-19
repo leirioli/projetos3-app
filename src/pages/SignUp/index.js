@@ -1,14 +1,35 @@
-import React from 'react'
+import React, { useState } from 'react'
+
 import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 
 import * as Animatable from 'react-native-animatable';
 
 import { useNavigation } from '@react-navigation/native';
 
+import { registerUser } from "../../controllers/AuthController";
+
 export default function SignUp() {
 
     const navigation = useNavigation();
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
 
+    const handleRegister = async () => {
+        if (password !== confirmPassword) {
+            alert("Senhas não conferem!");
+            return;
+        }
+        try {
+            await registerUser(email, password); // chama Firebase ou Controller
+            alert("Cadastro realizado com sucesso!");
+            navigation.replace("Usuario"); // vai direto para a tela de usuários
+        } catch (err) {
+            alert(err.message);
+        }
+    };
+    
     return (
         <View style={styles.container}>
             <Animatable.View animation='fadeInLeft' delay={500} style={styles.containerHeader}>
@@ -16,26 +37,38 @@ export default function SignUp() {
             </Animatable.View>
 
             <Animatable.View animation="fadeInUp" style={styles.containerForm}>
+
+                <Text style={styles.title}>Nome</Text>
+                <TextInput
+                    placeholder="Digite seu nome..."
+                    style={styles.input}
+                    value={name} onChangeText={setName}
+                />
+
+
                 <Text style={styles.title}>E-mail</Text>
                 <TextInput
                     placeholder='Digite seu e-mail...'
                     style={styles.input}
+                    value={email} onChangeText={setEmail}
                 />
 
                 <Text style={styles.title}>Senha</Text>
                 <TextInput
                     placeholder='Digite sua senha...'
                     style={styles.input}
+                    secureTextEntry value={password} onChangeText={setPassword}
                 />
-                
+
                 <Text style={styles.title}>Confirme sua senha</Text>
                 <TextInput
                     placeholder='Digite sua senha...'
                     style={styles.input}
+                    secureTextEntry value={confirmPassword} onChangeText={setConfirmPassword}
                 />
 
-                <TouchableOpacity style={styles.button}>
-                    <Text style={styles.buttonText}>Entrar</Text>
+                <TouchableOpacity style={styles.button} onPress={handleRegister}>
+                    <Text style={styles.buttonText}>Cadastrar</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -119,5 +152,5 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         alignItems: 'center',
         justifyContent: 'center'
-      }
+    }
 })
