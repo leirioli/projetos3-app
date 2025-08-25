@@ -1,4 +1,4 @@
-// src/routes/index.js
+
 
 import React, { useState, useEffect } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -16,6 +16,7 @@ import SignUp from '../pages/SignUp';
 import Usuario from '../pages/Usuario';
 import VisuServicos from '../pages/VisuServicos';
 import Agendar from '../pages/Agendar';
+import VisuAgenda from '../pages/VisuAgenda';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -44,6 +45,9 @@ function MainTabs() {
                     } else if (route.name === "Agendar") {
                         iconName = "calendar";
                     }
+                    else if (route.name == "Agendamentos") {
+                        iconName = "list-circle"
+                    }
                     return <Ionicons name={iconName} size={size} color={color} />;
                 },
                 tabBarActiveTintColor: "#8E84DD",
@@ -57,6 +61,7 @@ function MainTabs() {
             />
             <Tab.Screen name="Serviços" component={VisuServicos} />
             <Tab.Screen name="Agendar" component={Agendar} />
+            <Tab.Screen name='Agendamentos' component={VisuAgenda} />
         </Tab.Navigator>
     );
 }
@@ -83,6 +88,5 @@ export default function Routes() {
         );
     }
     
-    // Remova a tag <NavigationContainer> daqui
     return user ? <MainTabs /> : <AuthStack />;
 }

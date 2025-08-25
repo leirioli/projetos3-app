@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert, SafeAreaView } from 'react-native';
 import { Calendar } from 'react-native-calendars';
-import { db } from '../../models/firebaseConfig';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, addDoc, collection } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
+import { db } from '../../models/firebaseConfig';
+import { useNavigation } from '@react-navigation/native';
 
 
 export default function Agendar() {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedService, setSelectedService] = useState(null);
   const [horariosOcupados, setHorariosOcupados] = useState([]);
+  const navigation = useNavigation();
 
   const markedDates = {
     [selectedDate]: {
@@ -18,9 +20,7 @@ export default function Agendar() {
     },
   };
 
-
   const horariosDisponiveis = ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00"];
-
   const servicos = [
     { id: '1', nome: 'Corte de cabelo' },
     { id: '2', nome: 'Manicure' },
@@ -33,7 +33,7 @@ export default function Agendar() {
     setSelectedDate(day.dateString);
     setSelectedService(null);
 
-    const dayDocRef = doc(db, 'agendamentos', day.dateString);
+    const dayDocRef = doc(db, 'horarios_agendados_por_dia', day.dateString);
     const dayDoc = await getDoc(dayDocRef);
 
     if (dayDoc.exists()) {
@@ -58,16 +58,21 @@ export default function Agendar() {
       return;
     }
 
-    const agendamentoDocRef = doc(db, 'agendamentos', selectedDate);
-
     const novoAgendamento = {
       cliente: user.displayName || user.email,
       servico: selectedService.nome,
+      data: selectedDate,
+      horario: horario,
+      userId: user.uid,
       createdAt: new Date()
     };
 
     try {
-      await setDoc(agendamentoDocRef, {
+      const agendamentosPorUsuarioRef = collection(db, 'agendamentos_por_usuario');
+      await addDoc(agendamentosPorUsuarioRef, novoAgendamento);
+
+      const horariosPorDiaRef = doc(db, 'horarios_agendados_por_dia', selectedDate);
+      await setDoc(horariosPorDiaRef, {
         horarios: {
           [horario]: novoAgendamento
         }
@@ -75,6 +80,8 @@ export default function Agendar() {
 
       Alert.alert("Sucesso!", `Agendamento de ${novoAgendamento.cliente} para ${selectedDate} às ${horario} salvo com sucesso!`);
       onDayPress({ dateString: selectedDate });
+      navigation.goBack();
+      
     } catch (error) {
       console.error("Erro ao agendar:", error);
       Alert.alert("Erro", "Não foi possível salvar o agendamento. Tente novamente.");

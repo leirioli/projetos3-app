@@ -1,6 +1,6 @@
 import * as AuthModel from "../models/AuthModel";
 import { db } from "../models/firebaseConfig";
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc, getFirestore, collection, query, where, getDocs } from "firebase/firestore";
 import { getAuth, createUserWithEmailAndPassword, updateProfile, signInWithEmailAndPassword } from "firebase/auth";
 import { signOut } from "firebase/auth";
 
@@ -60,12 +60,12 @@ export const registerUser = async (email, password, name) => {
 };
 
 export const logoutUser = async () => {
-    try {
-        const auth = getAuth();
-        await signOut(auth);
-        console.log("Usuário deslogado com sucesso!");
-    } catch (error) {
-        console.error("Erro ao fazer logout:", error);
-        throw error;
-    }
+  try {
+    const auth = getAuth();
+    await signOut(auth);
+    console.log("Usuário deslogado com sucesso!");
+  } catch (error) {
+    console.error("Erro ao fazer logout:", error);
+    throw error;
+  }
 };
