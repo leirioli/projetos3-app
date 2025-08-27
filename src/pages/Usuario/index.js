@@ -1,149 +1,144 @@
 import React, { useState, useEffect } from 'react';
-
-import { useNavigation } from '@react-navigation/native';
-
-import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, SafeAreaView, Image } from 'react-native';
-import { db } from '../../models/firebaseConfig';
-import { doc, getDoc } from 'firebase/firestore';
-import { getAuth } from "firebase/auth";
+import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, SafeAreaView, Image, Alert } from 'react-native';
 import { logoutUser } from '../../controllers/AuthController';
+// Importa a nova função do serviço de usuário
+import { listenToUserProfile } from '../../services/userService';
+
+// Um ícone simples para o botão, caso não tenha uma biblioteca de ícones
+const LogoutIcon = () => <Text style={{ color: 'white', marginRight: 10 }}>⇥</Text>;
 
 export default function Usuario() {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      const auth = getAuth();
-      const user = auth.currentUser;
-
-      if (!user) {
+    // Inicia o listener para o perfil do usuário
+    const unsubscribe = listenToUserProfile(
+      (profileData) => {
+        setUserData(profileData);
         setLoading(false);
-        return;
-      }
-
-      try {
-        const userDocRef = doc(db, 'usuarios', user.uid);
-        const userDoc = await getDoc(userDocRef);
-
-        if (userDoc.exists()) {
-          setUserData(userDoc.data());
-        } else {
-          console.log("Nenhum dado de usuário encontrado!");
-          setUserData(null);
-        }
-      } catch (error) {
-        console.error("Erro ao buscar dados do usuário:", error);
-      } finally {
+      },
+      (error) => {
+        Alert.alert("Erro", "Não foi possível carregar os dados do seu perfil.");
         setLoading(false);
       }
-    };
+    );
 
-    fetchUserData();
+    // A função de limpeza do useEffect chamará o 'unsubscribe'
+    // quando o componente for desmontado.
+    return () => unsubscribe();
   }, []);
 
-  const handleLogout = async () => {
-    try {
-      await logoutUser();
-    } catch (error) {
-      alert("Erro ao fazer logout. Tente novamente.");
-    }
+  const handleLogout = () => {
+    Alert.alert(
+      "Confirmar Saída",
+      "Tem certeza de que deseja sair?",
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Sair",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await logoutUser();
+            } catch (error) {
+              Alert.alert("Erro", "Não foi possível fazer logout. Tente novamente.");
+            }
+          }
+        }
+      ]
+    );
   };
 
   if (loading) {
     return (
-      <SafeAreaView style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#0000ff" />
-      </SafeAreaView>
-    );
-  }
-
-  if (!userData) {
-    return (
-      <SafeAreaView style={styles.container}>
-        <Text style={styles.title}>Perfil do Usuário</Text>
-        <Text>Nenhum dado de perfil encontrado. Por favor, complete seu cadastro.</Text>
-        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-          <Text style={styles.logoutButtonText}>Sair</Text>
-        </TouchableOpacity>
+      <SafeAreaView style={styles.centered}>
+        <ActivityIndicator size="large" color="#8E51DC" />
       </SafeAreaView>
     );
   }
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Perfil do Usuário</Text>
-      <View style={styles.userContainer}>
+      <View style={styles.profileCard}>
         <Image
           source={require('../../assets/user.png')}
-          style={{
-            width: 150, // Adicionei uma largura
-            height: 150, // Adicionei uma altura
-          }}
-          resizeMode='contain'
+          style={styles.avatar}
         />
-      </View>
-      <View>
-        <Text style={styles.text}>{userData.nome}</Text>
-      </View>
-      <View style={styles.divider} />
-      <View>
-        <Text style={styles.label}>E-mail:</Text>
-        <Text style={styles.text2}>{userData.email}</Text>
+        {userData ? (
+          <>
+            <Text style={styles.userName}>{userData.nome}</Text>
+            <Text style={styles.userEmail}>{userData.email}</Text>
+          </>
+        ) : (
+          <Text style={styles.noDataText}>Perfil não encontrado.</Text>
+        )}
       </View>
 
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutButtonText}>Sair</Text>
+        <Text style={styles.logoutButtonText}>Sair da Conta</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
 }
 
-
 const styles = StyleSheet.create({
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f5f5f5',
+  },
   container: {
     flex: 1,
     padding: 20,
     backgroundColor: '#f5f5f5',
+    justifyContent: 'space-between',
   },
-  title: {
+  profileCard: {
+    backgroundColor: 'white',
+    borderRadius: 15,
+    padding: 25,
+    alignItems: 'center',
+    marginTop: 40,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  avatar: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    borderWidth: 3,
+    borderColor: '#8E51DC',
+    marginBottom: 20,
+  },
+  userName: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  userContainer: {
-    alignItems: 'center', // Centraliza a imagem
-    marginBottom: 20,
-  },
-  text: {
-    fontSize: 30,
     color: '#333',
+  },
+  userEmail: {
+    fontSize: 16,
+    color: 'gray',
+    marginTop: 5,
+  },
+  noDataText: {
+    fontSize: 16,
+    color: 'gray',
     textAlign: 'center',
-    marginBottom: 10,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: '#ccc',
-    width: '100%',
-    marginVertical: 20,
-  },
-  label: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#555',
-  },
-  text2: {
-    fontSize: 18,
-    color: '#333',
-    marginBottom: 20,
+    marginTop: 10,
   },
   logoutButton: {
-    width: '100%',
-    marginTop: 30,
-    backgroundColor: '#FF6347',
+    flexDirection: 'row',
+    backgroundColor: '#e74c3c',
     padding: 15,
-    borderRadius: 8,
+    borderRadius: 10,
     alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
   },
   logoutButtonText: {
     color: '#fff',
