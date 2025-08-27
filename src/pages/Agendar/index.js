@@ -16,7 +16,7 @@ export default function Agendar() {
   const markedDates = {
     [selectedDate]: {
       selected: true,
-      selectedColor: '#50cebb',
+      selectedColor: '#8E51DC',
     },
   };
 
@@ -112,7 +112,7 @@ export default function Agendar() {
 
   const renderHeader = () => (
     <View style={styles.headerContainer}>
-      <Text style={styles.title}>Agendamentos</Text>
+      <Text style={styles.title}>Agendar</Text>
       <Calendar 
       onDayPress={onDayPress} 
       markedDates={markedDates}
@@ -163,8 +163,8 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
   },
   serviceSelected: {
-    backgroundColor: '#50cebb',
-    borderColor: '#50cebb',
+    backgroundColor: '#B8B0E8',
+    borderColor: '#B8B0E8',
   },
   serviceText: { color: '#333' },
   horariosTitle: { fontSize: 18, fontWeight: 'bold', marginTop: 20, marginBottom: 10 },

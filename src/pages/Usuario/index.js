@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 import { useNavigation } from '@react-navigation/native';
 
-import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, SafeAreaView, Image } from 'react-native';
 import { db } from '../../models/firebaseConfig';
 import { doc, getDoc } from 'firebase/firestore';
 import { getAuth } from "firebase/auth";
@@ -73,17 +73,23 @@ export default function Usuario() {
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Perfil do Usuário</Text>
-      <View style={styles.infoContainer}>
-        <Text style={styles.label}>Nome:</Text>
+      <View style={styles.userContainer}>
+        <Image
+          source={require('../../assets/user.png')}
+          style={{
+            width: 150, // Adicionei uma largura
+            height: 150, // Adicionei uma altura
+          }}
+          resizeMode='contain'
+        />
+      </View>
+      <View>
         <Text style={styles.text}>{userData.nome}</Text>
       </View>
-      <View style={styles.infoContainer}>
+      <View style={styles.divider} />
+      <View>
         <Text style={styles.label}>E-mail:</Text>
-        <Text style={styles.text}>{userData.email}</Text>
-      </View>
-      <View style={styles.infoContainer}>
-        <Text style={styles.label}>Telefone:</Text>
-        <Text style={styles.text}>{userData.telefone || 'Não informado'}</Text>
+        <Text style={styles.text2}>{userData.email}</Text>
       </View>
 
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
@@ -100,37 +106,43 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#f5f5f5',
   },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
   },
-  infoContainer: {
-    marginBottom: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-    paddingBottom: 5,
+  userContainer: {
+    alignItems: 'center', // Centraliza a imagem
+    marginBottom: 20,
+  },
+  text: {
+    fontSize: 30,
+    color: '#333',
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: '#ccc',
+    width: '100%',
+    marginVertical: 20,
   },
   label: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
     color: '#555',
   },
-  text: {
-    fontSize: 16,
+  text2: {
+    fontSize: 18,
     color: '#333',
+    marginBottom: 20,
   },
-
   logoutButton: {
+    width: '100%',
     marginTop: 30,
     backgroundColor: '#FF6347',
-    padding: 10,
-    borderRadius: 5,
+    padding: 15,
+    borderRadius: 8,
     alignItems: 'center',
   },
   logoutButtonText: {
