@@ -7,11 +7,12 @@ import { getOccupiedTimesForDate, createAppointment } from '../../services/appoi
 
 // Idealmente, isso viria do backend ou de um arquivo de configuração
 const SERVICOS = [
-  { id: '1', nome: 'Corte de cabelo' },
-  { id: '2', nome: 'Manicure' },
-  { id: '3', nome: 'Pedicure' },
-  { id: '4', nome: 'Massagem' },
-  { id: '5', nome: 'Pintura' }
+  { id: '1', nome: 'Atendimento Psicanalítico' },
+  { id: '2', nome: 'Consultoria Contábil/Financeira' },
+  { id: '3', nome: 'Treinamento' },
+  { id: '4', nome: 'Ánálise Comportamental' },
+  { id: '5', nome: 'Inteligência Emocional' },
+  { id: '6', nome: 'Terapia Cognitiva Comportamental' }
 ];
 const HORARIOS_DISPONIVEIS = ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00"];
 
