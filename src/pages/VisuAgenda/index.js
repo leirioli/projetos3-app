@@ -1,85 +1,59 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, FlatList, ActivityIndicator, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { getFirestore, collection, query, where, getDocs, doc, updateDoc, deleteDoc } from 'firebase/firestore';
-import { getAuth } from 'firebase/auth';
+import { View, Text, FlatList, ActivityIndicator, StyleSheet, TouchableOpacity, Alert, RefreshControl } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-import { db } from '../../models/firebaseConfig';
+// Importa as funções do nosso novo serviço
+import { fetchUserAppointments, deleteAppointment } from '../../services/appointmentService'; 
 
 export default function VisuAgenda() {
   const [agendamentos, setAgendamentos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false); // Para o "puxar para atualizar"
 
-  const fetchAgendamentos = async () => {
+  // Função para buscar os dados usando o serviço
+  const loadAgendamentos = async () => {
     try {
-      const auth = getAuth();
-      const firestore = getFirestore();
-      const user = auth.currentUser;
-
-      if (!user) {
-        setLoading(false);
-        return;
-      }
-
-      const q = query(collection(firestore, "agendamentos_por_usuario"), where("userId", "==", user.uid));
-      const querySnapshot = await getDocs(q);
-      const listaAgendamentos = [];
-      querySnapshot.forEach((doc) => {
-        listaAgendamentos.push({ id: doc.id, ...doc.data() });
-      });
-
-      setAgendamentos(listaAgendamentos);
+      const userAppointments = await fetchUserAppointments();
+      setAgendamentos(userAppointments);
     } catch (error) {
-      console.error("Erro ao buscar agendamentos: ", error);
+      Alert.alert("Erro", "Não foi possível carregar seus agendamentos. Tente novamente.");
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
 
+  // useFocusEffect para carregar os dados quando a tela é focada
   useFocusEffect(
     useCallback(() => {
-      fetchAgendamentos();
+      setLoading(true);
+      loadAgendamentos();
     }, [])
   );
 
-  const handleEdit = async (agendamentoId) => {
-    const novoHorario = '17:00';
+  // Função para o "puxar para atualizar"
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    loadAgendamentos();
+  }, []);
 
-    if (novoHorario) {
-      const agendamentoRef = doc(db, 'agendamentos_por_usuario', agendamentoId);
-      try {
-        await updateDoc(agendamentoRef, {
-          horario: novoHorario,
-          dataAtualizacao: new Date()
-        });
-        Alert.alert("Sucesso!", "Agendamento atualizado com sucesso.");
-        fetchAgendamentos();
-      } catch (error) {
-        console.error("Erro ao atualizar agendamento:", error);
-        Alert.alert("Erro", "Não foi possível atualizar o agendamento.");
-      }
-    }
-  };
-
-  // NOVA FUNÇÃO: handleExcluir
-  const handleExcluir = async (agendamentoId) => {
+  // Função para lidar com a exclusão
+  const handleExcluir = (agendamentoId, data, horario) => {
     Alert.alert(
       "Confirmar Exclusão",
       "Tem certeza de que deseja excluir este agendamento?",
       [
-        {
-          text: "Cancelar",
-          style: "cancel"
-        },
+        { text: "Cancelar", style: "cancel" },
         {
           text: "Excluir",
+          style: "destructive",
           onPress: async () => {
-            const agendamentoRef = doc(db, 'agendamentos_por_usuario', agendamentoId);
             try {
-              await deleteDoc(agendamentoRef);
+              // Chama a função de exclusão do serviço
+              await deleteAppointment(agendamentoId, data, horario);
               Alert.alert("Sucesso!", "Agendamento excluído com sucesso.");
-              fetchAgendamentos(); // Recarrega a lista
+              // Atualiza a lista removendo o item excluído, sem precisar buscar tudo de novo
+              setAgendamentos(prev => prev.filter(item => item.id !== agendamentoId));
             } catch (error) {
-              console.error("Erro ao excluir agendamento:", error);
               Alert.alert("Erro", "Não foi possível excluir o agendamento.");
             }
           }
@@ -88,11 +62,10 @@ export default function VisuAgenda() {
     );
   };
 
-
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#0000ff" />
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color="#8E51DC" />
       </View>
     );
   }
@@ -107,71 +80,72 @@ export default function VisuAgenda() {
             <View>
               <Text style={styles.servico}>{item.servico}</Text>
               <Text style={styles.detalhes}>Data: {item.data}</Text>
-              <Text style={styles.detalhes}>Hora: {item.horario || 'Hora não informada'}</Text>
+              <Text style={styles.detalhes}>Hora: {item.horario}</Text>
             </View>
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity
-                style={styles.deleteButton}
-                onPress={() => handleExcluir(item.id)}
-              >
-                <Text style={styles.buttonText}>Excluir</Text>
-              </TouchableOpacity>
-            </View>
+            <TouchableOpacity
+              style={styles.deleteButton}
+              onPress={() => handleExcluir(item.id, item.data, item.horario)}
+            >
+              <Text style={styles.buttonText}>Excluir</Text>
+            </TouchableOpacity>
           </View>
         )}
         ListEmptyComponent={() => (
-          <Text style={styles.emptyText}>Você não tem agendamentos.</Text>
+          <View style={styles.centered}>
+            <Text style={styles.emptyText}>Você não tem agendamentos.</Text>
+          </View>
         )}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={["#8E51DC"]} />
+        }
       />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  loadingContainer: {
+  centered: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
   container: {
     flex: 1,
-    padding: 16,
+    backgroundColor: '#f5f5f5',
   },
   item: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
+    padding: 20,
+    marginHorizontal: 16,
+    marginVertical: 8,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    elevation: 2, // Sombra para Android
+    shadowColor: '#000', // Sombra para iOS
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
   },
   servico: {
     fontSize: 18,
     fontWeight: 'bold',
+    color: '#333',
   },
   detalhes: {
     fontSize: 14,
     color: 'gray',
+    marginTop: 4,
   },
   emptyText: {
-    textAlign: 'center',
-    marginTop: 20,
     fontSize: 16,
     color: 'gray',
   },
-  buttonContainer: {
-    flexDirection: 'row',
-  },
-  editButton: {
-    backgroundColor: '#3498db',
-    padding: 10,
-    borderRadius: 5,
-    marginRight: 10,
-  },
-
   deleteButton: {
     backgroundColor: '#e74c3c',
-    padding: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
     borderRadius: 5,
   },
   buttonText: {
