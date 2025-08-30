@@ -18,9 +18,8 @@ export default function Welcome() {
           }}
           resizeMode='contain'
         />
+        <Animatable.Text delay={600} animation='fadeInUp' style={styles.title}>Seja bem vindo(a)!</Animatable.Text>
       </View>
-
-      <Animatable.Text delay={600} animation='fadeInUp' style={styles.title}>Seja bem vindo(a)!</Animatable.Text>
 
       <Animatable.View delay={600} animation='fadeInUp' style={styles.containerForm}>
         <Text style={styles.text}>Faça o login ou cadastre-se</Text>
@@ -39,57 +38,50 @@ export default function Welcome() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#8E84DD',
+    backgroundColor: '#8E84DD', // Cor de fundo principal mantida
   },
-
   containerLogo: {
-    flex: 1,
+    flex: 2, // Ocupa 2/3 da tela
+    justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#8E84DD',
+    backgroundColor: '#8E84DD', // Cor de fundo mantida
+    paddingHorizontal: '5%',
   },
-
-
   containerForm: {
-    flex: 0.5,
-    backgroundColor: '#8350F2',
+    flex: 1, // Ocupa 1/3 da tela
+    backgroundColor: '#8350F2', // Cor do formulário mantida
     borderTopLeftRadius: 50,
     borderTopRightRadius: 50,
-    paddingStart: '5%',
-    paddingEnd: '5%',
+    paddingHorizontal: '5%',
+    justifyContent: 'space-around', // Distribui o espaço para o texto e o botão
+    alignItems: 'center',
   },
-
   title: {
-    flex: 1,
     fontSize: 45,
     fontWeight: 'bold',
-    position: 'absolute',
-    bottom: 350,
-    alignSelf: 'center',
+    color: '#000', // Cor do título mantida (preto)
+    textAlign: 'center',
+    bottom: 40,
   },
-
   text: {
-    marginTop: 45,
     fontSize: 24,
     textAlign: 'center',
-    color: 'black'
+    color: 'black', // Cor do texto mantida
   },
-
   button: {
-    position: 'absolute',
-    backgroundColor: '#8350F2',
+    backgroundColor: '#8350F2', // Cor do botão mantida
     borderColor: 'black',
-    borderRadius: 15,
     borderWidth: 3,
-    paddingVertical: 16,
+    borderRadius: 15,
+    paddingVertical: 15,
     width: '60%',
-    alignSelf: 'center',
-    bottom: '40%',
     alignItems: 'center',
-    justifyContent: 'center',
+        bottom: 40,
   },
-
+  
   buttonText: {
     fontSize: 18,
-    fontWeight: '900'
-  }
-})
+    fontWeight: '900',
+    color: '#000', // Cor do texto do botão mantida (preto)
+  },
+});

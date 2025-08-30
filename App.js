@@ -1,6 +1,8 @@
 import React, { useEffect } from "react";
 import { StatusBar, AppState } from 'react-native';
 
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+
 import { NavigationContainer } from '@react-navigation/native';
 import Routes from './src/routes';
 
@@ -37,9 +39,11 @@ export default function App() {
   }, []);
 
   return (
-    <NavigationContainer>
-      <StatusBar backgroundColor={STATUS_BAR_COLOR} barStyle={STATUS_BAR_STYLE} />
-      <Routes />
-    </NavigationContainer>
+    <SafeAreaProvider>
+      <NavigationContainer>
+        <StatusBar backgroundColor={STATUS_BAR_COLOR} barStyle={STATUS_BAR_STYLE} />
+        <Routes />
+      </NavigationContainer>
+    </SafeAreaProvider>
   );
 }

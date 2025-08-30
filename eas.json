@@ -1,0 +1,30 @@
+{
+  "cli": {
+    "version": ">= 16.18.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_API_KEY": "AIzaSyCq7i_gjRgE7hfeb8KKYUVpBGdoFEc0S3E",
+        "EXPO_PUBLIC_AUTH_DOMAIN": "espacosilmararegina-40152.firebaseapp.com",
+        "EXPO_PUBLIC_PROJECT_ID": "espacosilmararegina-40152",
+        "EXPO_PUBLIC_STORAGE_BUCKET": "espacosilmararegina-40152.appspot.com",
+        "EXPO_PUBLIC_MESSAGING_SENDER_ID": "716292648402",
+        "EXPO_PUBLIC_APP_ID": "1:716292648402:web:a049c535e5aa958eb4ec0b",
+        "EXPO_PUBLIC_MEASUREMENT_ID": "G-72N77SMS4X"
+      }
+    },
+    "production": {
+      "autoIncrement": true
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, ActivityIndicator, ScrollView } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import { useNavigation } from '@react-navigation/native';
 import { registerUser } from "../../controllers/AuthController"; // Assume que registerUser foi atualizado
@@ -27,7 +27,7 @@ export default function SignUp() {
         try {
             console.log("Tentando registrar usuário...");
             // Passe o 'name' para a função registerUser
-            await registerUser(email, password, name); 
+            await registerUser(email, password, name);
 
             console.log("Usuário registrado com sucesso! Navegando...");
             Alert.alert("Sucesso!", "Cadastro realizado com sucesso.");
@@ -42,58 +42,60 @@ export default function SignUp() {
     };
 
     return (
-        <View style={styles.container}>
-            <Animatable.View animation='fadeInLeft' delay={500} style={styles.containerHeader}>
-                <Text style={styles.message}>Cadastro</Text>
-            </Animatable.View>
+        <ScrollView>
+            <View style={styles.container}>
+                <Animatable.View animation='fadeInLeft' delay={500} style={styles.containerHeader}>
+                    <Text style={styles.message}>Cadastro</Text>
+                </Animatable.View>
 
-            <Animatable.View animation="fadeInUp" style={styles.containerForm}>
-                <Text style={styles.title}>Nome</Text>
-                <TextInput
-                    placeholder="Digite seu nome..."
-                    style={styles.input}
-                    value={name} onChangeText={setName}
-                />
+                <Animatable.View animation="fadeInUp" style={styles.containerForm}>
+                    <Text style={styles.title}>Nome</Text>
+                    <TextInput
+                        placeholder="Digite seu nome..."
+                        style={styles.input}
+                        value={name} onChangeText={setName}
+                    />
 
-                <Text style={styles.title}>E-mail</Text>
-                <TextInput
-                    placeholder='Digite seu e-mail...'
-                    style={styles.input}
-                    value={email} onChangeText={setEmail}
-                    keyboardType="email-address" // Adicione o tipo de teclado para e-mail
-                    autoCapitalize="none" // Desativa a capitalização automática
-                />
+                    <Text style={styles.title}>E-mail</Text>
+                    <TextInput
+                        placeholder='Digite seu e-mail...'
+                        style={styles.input}
+                        value={email} onChangeText={setEmail}
+                        keyboardType="email-address" // Adicione o tipo de teclado para e-mail
+                        autoCapitalize="none" // Desativa a capitalização automática
+                    />
 
-                <Text style={styles.title}>Senha</Text>
-                <TextInput
-                    placeholder='Digite sua senha...'
-                    style={styles.input}
-                    secureTextEntry value={password} onChangeText={setPassword}
-                />
+                    <Text style={styles.title}>Senha</Text>
+                    <TextInput
+                        placeholder='Digite sua senha...'
+                        style={styles.input}
+                        secureTextEntry value={password} onChangeText={setPassword}
+                    />
 
-                <Text style={styles.title}>Confirme sua senha</Text>
-                <TextInput
-                    placeholder='Digite sua senha...'
-                    style={styles.input}
-                    secureTextEntry value={confirmPassword} onChangeText={setConfirmPassword}
-                />
+                    <Text style={styles.title}>Confirme sua senha</Text>
+                    <TextInput
+                        placeholder='Digite sua senha...'
+                        style={styles.input}
+                        secureTextEntry value={confirmPassword} onChangeText={setConfirmPassword}
+                    />
 
-                <TouchableOpacity style={styles.button} onPress={handleRegister} disabled={loading}>
-                    {loading ? (
-                        <ActivityIndicator color="#fff" /> // Mostra um indicador de carregamento
-                    ) : (
-                        <Text style={styles.buttonText}>Cadastrar</Text>
-                    )}
-                </TouchableOpacity>
+                    <TouchableOpacity style={styles.button} onPress={handleRegister} disabled={loading}>
+                        {loading ? (
+                            <ActivityIndicator color="#fff" /> // Mostra um indicador de carregamento
+                        ) : (
+                            <Text style={styles.buttonText}>Cadastrar</Text>
+                        )}
+                    </TouchableOpacity>
 
-                <TouchableOpacity
-                    style={styles.button2}
-                    onPress={() => navigation.navigate('SignIn')}
-                >
-                    <Text style={styles.buttonText}>Já tem uma conta? Faça o Login</Text>
-                </TouchableOpacity>
-            </Animatable.View>
-        </View>
+                    <TouchableOpacity
+                        style={styles.button2}
+                        onPress={() => navigation.navigate('SignIn')}
+                    >
+                        <Text style={styles.buttonText}>Já tem uma conta? Faça o Login</Text>
+                    </TouchableOpacity>
+                </Animatable.View>
+            </View>
+        </ScrollView>
     );
 }
 
@@ -103,63 +105,57 @@ const styles = StyleSheet.create({
         backgroundColor: '#8E84DD',
     },
     containerHeader: {
-        marginTop: '14%',
-        marginBottom: '8%',
-        paddingStart: '5%',
+        flex: 1, // Ocupa a parte de cima
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: '20%',
+        marginBottom: '20%'
     },
     message: {
-        fontSize: 28,
+        fontSize: 40,
         fontWeight: '900',
-        alignSelf: 'center',
-        marginRight: '5%',
+        color: 'black',
     },
     containerForm: {
+        flex: 2, // Ocupa a parte de baixo, com mais espaço
         backgroundColor: '#EEEEEE',
-        flex: 1,
         borderTopLeftRadius: 25,
         borderTopRightRadius: 25,
-        paddingStart: '5%',
-        paddingEnd: '5%',
+        paddingHorizontal: '5%',
+        paddingVertical: 20,
     },
     title: {
         fontSize: 20,
         marginTop: 25,
     },
     input: {
-        borderWidth: 1,
-        borderColor: '#ccc', // Adicione uma cor de borda
-        height: 40,
+        borderBottomWidth: 1, // Mais sutil que 'borderWidth: 1'
+        borderBottomColor: '#DDD',
+        height: 50,
         marginBottom: 12,
-        marginTop: 12,
         fontSize: 16,
-        paddingHorizontal: 10, // Adicione padding horizontal
-        borderRadius: 5, // Adicione borda arredondada
     },
     button: {
         backgroundColor: '#8E84DD',
-        width: '50%',
-        height: 50,
+        width: '100%',
         borderRadius: 15,
-        paddingVertical: 8,
+        paddingVertical: 15, // Usando padding para altura responsiva
         marginTop: 20,
-        alignSelf: 'center',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
     },
     buttonText: {
         fontSize: 18,
         fontWeight: '900',
-        color: '#fff', // Cor do texto para ser visível
+        color: 'black',
     },
     button2: {
-        marginTop: 25,
+        marginTop: 15,
         backgroundColor: '#CE6AE6',
-        height: 50,
-        width: '70%',
+        width: '100%',
         borderRadius: 15,
-        paddingVertical: 8,
-        alignSelf: 'center',
+        paddingVertical: 15, // Usando padding para altura responsiva
         alignItems: 'center',
-        justifyContent: 'center'
-    }
+        justifyContent: 'center',
+    },
 });

@@ -71,68 +71,56 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#8E84DD',
   },
-
   containerHeader: {
-    marginTop: '14%',
-    marginBottom: '8%',
-    paddingStart: '5%',
+    flex: 1, // Ocupa a parte de cima
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-
   message: {
-    fontSize: 28,
+    fontSize: 40,
     fontWeight: '900',
-    alignSelf: 'center',
-    marginRight: '5%',
+    color: 'black',
   },
-
   containerForm: {
+    flex: 2, // Ocupa a parte de baixo, com mais espaço
     backgroundColor: '#EEEEEE',
-    flex: 1,
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
-    paddingStart: '5%',
-    paddingEnd: '5%',
+    paddingHorizontal: '5%',
+    paddingVertical: 20,
   },
-
   title: {
     fontSize: 20,
     marginTop: 25,
   },
-
   input: {
-    borderWidth: 1,
-    height: 40,
+    borderBottomWidth: 1,
+    borderBottomColor: '#DDD',
+    height: 50,
     marginBottom: 12,
-    marginTop: 12,
     fontSize: 16,
   },
-
   button: {
     backgroundColor: '#8E84DD',
-    width: '50%',
-    height: 50,
+    width: '100%',
     borderRadius: 15,
-    paddingVertical: 8,
+    paddingVertical: 15, // Usando padding para altura responsiva
     marginTop: 20,
-    alignSelf: 'center',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
-
   buttonText: {
     fontSize: 18,
     fontWeight: '900',
+    color: 'black',
   },
-
   button2: {
-    marginTop: 25,
+    marginTop: 15,
     backgroundColor: '#CE6AE6',
-    height: 50,
-    width: '70%',
+    width: '100%',
     borderRadius: 15,
-    paddingVertical: 8,
-    alignSelf: 'center',
+    paddingVertical: 15, // Usando padding para altura responsiva
     alignItems: 'center',
-    justifyContent: 'center'
-  }
-})
+    justifyContent: 'center',
+  },
+});

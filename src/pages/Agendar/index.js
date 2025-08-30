@@ -129,8 +129,8 @@ export default function Agendar() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
-  title: { fontSize: 24, fontWeight: 'bold', margin: 20, textAlign: 'center', color: '#333' },
+  container: { flex: 1, backgroundColor: '#fff', marginTop: 30, },
+  title: { fontSize: 24, fontWeight: 'bold', margin: 20, textAlign: 'center', color: '#333', marginTop: 40, },
   section: { paddingHorizontal: 20, marginTop: 20 },
   sectionTitle: { fontSize: 18, fontWeight: '600', marginBottom: 15, color: '#444' },
   serviceItem: { paddingVertical: 10, paddingHorizontal: 15, marginRight: 10, backgroundColor: '#f0f0f0', borderRadius: 20, borderWidth: 1, borderColor: '#ddd' },
